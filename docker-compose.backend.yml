@@ -37,7 +37,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: jdbc:postgresql://postgres:5432/postgres
+      DATABASE_URL: jdbc:postgresql://13.208.224.83:5432/postgres
       DATABASE_USER: admin
       DATABASE_PASSWORD: 1234
     ports:
