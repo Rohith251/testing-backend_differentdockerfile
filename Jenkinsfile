@@ -25,11 +25,13 @@ pipeline {
             steps {
                 sh '''
                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_USER}/${DOCKER_IMAGE}:${DOCKER_TAG}
-                docker push ${DOCKER_USER}/${DOCKER_IMAGE}:${DOCKER_TAG}
+                docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${DOCKER_TAG}
+                docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
             }
         }
+
+       
 
         stage('Deploy') {
             steps {
