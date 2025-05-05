@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmailController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ForexCard</a> &gt; <a href="index.source.html" class="el_package">com.forexcard.controller</a> &gt; <span class="el_source">EmailController.java</span></div><h1>EmailController.java</h1><pre class="source lang-java linenums">package com.forexcard.controller;
+
+import com.forexcard.dto.TransactionDTO;
+import com.forexcard.model.Transaction;
+
+import com.forexcard.model.User;
+import com.forexcard.pdf.PdfGeneratorService;
+import com.forexcard.repo.TransactionRepository;
+import com.forexcard.repo.UserRepository;
+import com.forexcard.service.EmailService;
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
+
+
+@RestController
+@RequestMapping(&quot;/email&quot;)
+public class EmailController {
+
+    private final EmailService emailService;
+    private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public EmailController(EmailService emailService,
+                            TransactionRepository transactionRepository,
+<span class="fc" id="L35">                            UserRepository userRepository) {</span>
+<span class="fc" id="L36">        this.emailService = emailService;</span>
+<span class="fc" id="L37">        this.transactionRepository = transactionRepository;</span>
+<span class="fc" id="L38">        this.userRepository = userRepository;</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Endpoint to send OTP to user's email for password reset
+     */
+    @PostMapping(&quot;/send-forgot-password-otp&quot;)
+    public ResponseEntity&lt;String&gt; sendForgotPasswordOtp(@RequestParam(&quot;email&quot;) String email) {
+<span class="nc" id="L46">        Optional&lt;User&gt; userOpt = userRepository.findByEmail(email);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (userOpt.isEmpty()) {</span>
+<span class="nc" id="L48">            return ResponseEntity.badRequest().body(&quot;User not found.&quot;);</span>
+        }
+
+<span class="nc" id="L51">        emailService.sendForgotPasswordOtp(userOpt.get().getId()); // Trigger OTP sending for password reset</span>
+<span class="nc" id="L52">        return ResponseEntity.ok(&quot;OTP for password reset has been sent successfully.&quot;);</span>
+    }
+    /**
+     * Endpoint to send OTP to user's email
+     */
+    @PostMapping(&quot;/send-otp&quot;)
+    public ResponseEntity&lt;String&gt; sendOtp(@RequestParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L59">        Optional&lt;User&gt; userOpt = userRepository.findById(userId);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (userOpt.isEmpty()) {</span>
+<span class="nc" id="L61">            return ResponseEntity.badRequest().body(&quot;User not found.&quot;);</span>
+        }
+
+<span class="nc" id="L64">        emailService.sendOtp(userId); // Trigger OTP sending</span>
+<span class="nc" id="L65">        return ResponseEntity.ok(&quot;OTP sending triggered successfully.&quot;);</span>
+    }
+
+    /**
+     * Endpoint to send transaction report as PDF via email
+     */
+    @GetMapping(&quot;/report&quot;)
+    public ResponseEntity&lt;String&gt; sendTransactionReportToUser(
+            @RequestParam(&quot;userId&quot;) Integer userId,
+            @RequestParam(&quot;startDate&quot;) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(&quot;endDate&quot;) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+<span class="nc" id="L77">        Optional&lt;User&gt; userOpt = userRepository.findById(userId);</span>
+<span class="nc bnc" id="L78" title="All 4 branches missed.">        if (userOpt.isEmpty() || userOpt.get().getForexCard() == null) {</span>
+<span class="nc" id="L79">            return ResponseEntity.badRequest().body(&quot;User or Forex Card not found.&quot;);</span>
+        }
+
+<span class="nc" id="L82">        User user = userOpt.get();</span>
+<span class="nc" id="L83">        Long cardId = user.getForexCard().getId();</span>
+
+<span class="nc" id="L85">        LocalDateTime startDateTime = startDate.atStartOfDay();</span>
+<span class="nc" id="L86">        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);</span>
+
+<span class="nc" id="L88">        List&lt;TransactionDTO&gt; transactions = transactionRepository</span>
+<span class="nc" id="L89">                .findTransactionsByCardIdAndDateBetween(cardId, startDateTime, endDateTime);</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (transactions.isEmpty()) {</span>
+<span class="nc" id="L92">            return ResponseEntity.ok(&quot;No transactions found for the selected period.&quot;);</span>
+        }
+
+<span class="nc" id="L95">        byte[] pdfBytes = PdfGeneratorService.generateTransactionReport(transactions, user);</span>
+
+<span class="nc" id="L97">        emailService.sendTransactionReport(user.getEmail(), pdfBytes, &quot;Transaction_Report.pdf&quot;);</span>
+<span class="nc" id="L98">		return ResponseEntity.ok(&quot;Transaction report sent to your registered email.&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

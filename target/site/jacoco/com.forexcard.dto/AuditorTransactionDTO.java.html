@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditorTransactionDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ForexCard</a> &gt; <a href="index.source.html" class="el_package">com.forexcard.dto</a> &gt; <span class="el_source">AuditorTransactionDTO.java</span></div><h1>AuditorTransactionDTO.java</h1><pre class="source lang-java linenums">package com.forexcard.dto;
+
+import java.time.LocalDateTime;
+
+public class AuditorTransactionDTO {
+    private LocalDateTime date; 
+    private String name;
+    private String cardNumber; 
+    private String merchant;
+    private String currencyName; 
+    private double currentBalance;
+    private double deductAmount;
+    private double amount; 
+    private String status;
+    
+
+    
+
+    public AuditorTransactionDTO(LocalDateTime date, String name, String cardNumber, String merchant,
+			String currencyName, double currentBalance, double deductAmount, double amount, String status) {
+<span class="nc" id="L21">		super();</span>
+<span class="nc" id="L22">		this.date = date;</span>
+<span class="nc" id="L23">		this.name = name;</span>
+<span class="nc" id="L24">		this.cardNumber = cardNumber;</span>
+<span class="nc" id="L25">		this.merchant = merchant;</span>
+<span class="nc" id="L26">		this.currencyName = currencyName;</span>
+<span class="nc" id="L27">		this.currentBalance = currentBalance;</span>
+<span class="nc" id="L28">		this.deductAmount = deductAmount;</span>
+<span class="nc" id="L29">		this.amount = amount;</span>
+<span class="nc" id="L30">		this.status = status;</span>
+<span class="nc" id="L31">	}</span>
+
+	// Getters and Setters
+    public LocalDateTime getDate() {
+<span class="nc" id="L35">        return date;</span>
+    }
+
+    public void setDate(LocalDateTime date) {
+<span class="nc" id="L39">        this.date = date;</span>
+<span class="nc" id="L40">    }</span>
+
+    public String getName() {
+<span class="nc" id="L43">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L47">        this.name = name;</span>
+<span class="nc" id="L48">    }</span>
+
+    public String getCardNumber() {
+<span class="nc" id="L51">        return cardNumber;</span>
+    }
+
+    public void setCardNumber(String cardNumber) {
+<span class="nc" id="L55">        this.cardNumber = cardNumber;</span>
+<span class="nc" id="L56">    }</span>
+
+    public String getMerchant() {
+<span class="nc" id="L59">        return merchant;</span>
+    }
+
+    public void setMerchant(String merchant) {
+<span class="nc" id="L63">        this.merchant = merchant;</span>
+<span class="nc" id="L64">    }</span>
+
+    public String getCurrencyName() {
+<span class="nc" id="L67">        return currencyName;</span>
+    }
+
+    public void setCurrencyName(String currencyName) {
+<span class="nc" id="L71">        this.currencyName = currencyName;</span>
+<span class="nc" id="L72">    }</span>
+
+    public double getAmount() {
+<span class="nc" id="L75">        return amount;</span>
+    }
+
+    public void setAmount(double amount) {
+<span class="nc" id="L79">        this.amount = amount;</span>
+<span class="nc" id="L80">    }</span>
+
+    public String getStatus() {
+<span class="nc" id="L83">        return status;</span>
+    }
+
+    public void setStatus(String status) {
+<span class="nc" id="L87">        this.status = status;</span>
+<span class="nc" id="L88">    }</span>
+
+	public double getDeductAmount() {
+<span class="nc" id="L91">		return deductAmount;</span>
+	}
+
+	public void setDeductAmount(double deductAmount) {
+<span class="nc" id="L95">		this.deductAmount = deductAmount;</span>
+<span class="nc" id="L96">	}</span>
+
+	public double getCurrentBalance() {
+<span class="nc" id="L99">		return currentBalance;</span>
+	}
+
+	public void setCurrentBalance(double currentBalance) {
+<span class="nc" id="L103">		this.currentBalance = currentBalance;</span>
+<span class="nc" id="L104">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

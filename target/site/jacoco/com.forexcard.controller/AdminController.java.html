@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ForexCard</a> &gt; <a href="index.source.html" class="el_package">com.forexcard.controller</a> &gt; <span class="el_source">AdminController.java</span></div><h1>AdminController.java</h1><pre class="source lang-java linenums">package com.forexcard.controller;
+
+import com.forexcard.dto.PendingUserDTO;
+import com.forexcard.model.User;
+import com.forexcard.repo.UserRepository;
+import com.forexcard.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(&quot;/admin&quot;)
+<span class="fc" id="L19">public class AdminController {</span>
+
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @PutMapping(&quot;/approve/{userId}&quot;)
+    public ResponseEntity&lt;String&gt; approveUser(@PathVariable(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L29">        String result = adminService.approveUser(userId);</span>
+<span class="nc" id="L30">        return ResponseEntity.ok(result);</span>
+    }
+
+    @PutMapping(&quot;/reject/{userId}&quot;)
+    public ResponseEntity&lt;String&gt; denyUser(@PathVariable(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L35">        String result = adminService.denyUser(userId);</span>
+<span class="nc" id="L36">        return ResponseEntity.ok(result);</span>
+    }
+
+    @GetMapping(&quot;/pending&quot;)
+    public ResponseEntity&lt;List&lt;PendingUserDTO&gt;&gt; getPendingUsers() {
+<span class="nc" id="L41">        List&lt;PendingUserDTO&gt; pendingUserDTOs = adminService.getPendingUsers();</span>
+<span class="nc" id="L42">        return ResponseEntity.ok(pendingUserDTOs);</span>
+    }
+
+    @GetMapping(&quot;/document/{userId}&quot;)
+    public ResponseEntity&lt;byte[]&gt; viewUploadedDocument(@PathVariable(&quot;userId&quot;) Integer userId) {
+        try {
+<span class="nc" id="L48">            Optional&lt;User&gt; optionalUser = userRepo.findById(userId);</span>
+
+<span class="nc bnc" id="L50" title="All 4 branches missed.">            if (optionalUser.isEmpty() || optionalUser.get().getFilePath() == null) {</span>
+<span class="nc" id="L51">                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();</span>
+            }
+
+<span class="nc" id="L54">            String filePath = optionalUser.get().getFilePath(); // e.g., /uploads/salary-slips/xyz.pdf</span>
+<span class="nc" id="L55">            Path path = Paths.get(&quot;.&quot; + filePath);</span>
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (!Files.exists(path)) {</span>
+<span class="nc" id="L58">                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();</span>
+            }
+
+<span class="nc" id="L61">            byte[] fileContent = adminService.getUploadedDocument(userId);</span>
+
+<span class="nc" id="L63">            String contentType = Files.probeContentType(path);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            if (contentType == null) {</span>
+<span class="nc" id="L65">                contentType = &quot;application/octet-stream&quot;;</span>
+            }
+
+<span class="nc" id="L68">            HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L69">            headers.setContentType(MediaType.parseMediaType(contentType));</span>
+<span class="nc" id="L70">            headers.setContentDisposition(ContentDisposition.inline().filename(path.getFileName().toString()).build());</span>
+
+<span class="nc" id="L72">            return new ResponseEntity&lt;&gt;(fileContent, headers, HttpStatus.OK);</span>
+<span class="nc" id="L73">        } catch (Exception e) {</span>
+<span class="nc" id="L74">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

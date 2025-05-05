@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.forexcard.test.AuthServiceTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.498 s -- in com.forexcard.test.AuthServiceTest

@@ -1,0 +1,6 @@
+com\forexcard\test\AuthServiceTest.class
+com\forexcard\test\ForgotPasswordServiceTest.class
+com\forexcard\test\TransactionServiceTest.class
+com\forexcard\ForexCardApplicationTests.class
+com\forexcard\test\AdminServiceTest.class
+com\forexcard\test\ForexCardServiceTest.class

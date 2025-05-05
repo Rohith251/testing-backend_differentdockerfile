@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ForexCard</a> &gt; <a href="index.source.html" class="el_package">com.forexcard.dataload</a> &gt; <span class="el_source">DataLoader.java</span></div><h1>DataLoader.java</h1><pre class="source lang-java linenums">package com.forexcard.dataload;
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.forexcard.model.Currency;
+import com.forexcard.repo.CurrencyRepository;
+
+import java.util.List;
+
+@Component
+<span class="fc" id="L15">public class DataLoader implements CommandLineRunner {</span>
+
+	@Autowired
+    private CurrencyRepository repo;
+
+    
+
+    @Override
+    public void run(String... args) {
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if (repo.count() == 0) {</span>
+<span class="nc" id="L25">            List&lt;com.forexcard.model.Currency&gt; currencies = List.of(</span>
+<span class="nc" id="L26">                new Currency(&quot;INR&quot;, 1.00, &quot;Indian Rupee&quot;,null),</span>
+<span class="nc" id="L27">                new Currency(&quot;USD&quot;, 83.33, &quot;US Dollar&quot;,null),</span>
+<span class="nc" id="L28">                new Currency(&quot;EUR&quot;, 90.91, &quot;Euro&quot;,null),</span>
+<span class="nc" id="L29">                new Currency(&quot;JPY&quot;, 0.67, &quot;Japanese Yen&quot;,null),</span>
+<span class="nc" id="L30">                new Currency(&quot;GBP&quot;, 104.17, &quot;British Pound&quot;,null),</span>
+<span class="nc" id="L31">                new Currency(&quot;AUD&quot;, 55.25, &quot;Australian Dollar&quot;,null),</span>
+<span class="nc" id="L32">                new Currency(&quot;CAD&quot;, 61.75, &quot;Canadian Dollar&quot;,null),</span>
+<span class="nc" id="L33">                new Currency(&quot;CHF&quot;, 93.50, &quot;Swiss Franc&quot;,null),</span>
+<span class="nc" id="L34">                new Currency(&quot;SGD&quot;, 61.00, &quot;Singapore Dollar&quot;,null),</span>
+<span class="nc" id="L35">                new Currency(&quot;CNY&quot;, 11.50, &quot;Chinese Yuan&quot;,null),</span>
+<span class="nc" id="L36">                new Currency(&quot;ZAR&quot;, 4.55, &quot;South African Rand&quot;,null),</span>
+<span class="nc" id="L37">                new Currency(&quot;NZD&quot;, 52.30, &quot;New Zealand Dollar&quot;,null),</span>
+<span class="nc" id="L38">                new Currency(&quot;KRW&quot;, 0.063, &quot;South Korean Won&quot;,null),</span>
+<span class="nc" id="L39">                new Currency(&quot;THB&quot;, 2.41, &quot;Thai Baht&quot;,null),</span>
+<span class="nc" id="L40">                new Currency(&quot;AED&quot;, 22.69, &quot;UAE Dirham&quot;,null),</span>
+<span class="nc" id="L41">                new Currency(&quot;HKD&quot;, 10.65, &quot;Hong Kong Dollar&quot;,null),</span>
+<span class="nc" id="L42">                new Currency(&quot;SEK&quot;, 8.20, &quot;Swedish Krona&quot;,null),</span>
+<span class="nc" id="L43">                new Currency(&quot;NOK&quot;, 7.85, &quot;Norwegian Krone&quot;,null),</span>
+<span class="nc" id="L44">                new Currency(&quot;DKK&quot;, 12.19, &quot;Danish Krone&quot;,null),</span>
+<span class="nc" id="L45">                new Currency(&quot;MYR&quot;, 17.92, &quot;Malaysian Ringgit&quot;,null),</span>
+<span class="nc" id="L46">                new Currency(&quot;IDR&quot;, 0.0054, &quot;Indonesian Rupiah&quot;,null),</span>
+<span class="nc" id="L47">                new Currency(&quot;PHP&quot;, 1.50, &quot;Philippine Peso&quot;,null)</span>
+            );
+<span class="nc" id="L49">            repo.saveAll(currencies);</span>
+        }
+<span class="fc" id="L51">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

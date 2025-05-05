@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ForexCard</a> &gt; <a href="index.source.html" class="el_package">com.forexcard.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.forexcard.controller;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.forexcard.dto.PendingUserDTO;
+import com.forexcard.dto.UserDTO;
+import com.forexcard.model.Transaction;
+import com.forexcard.model.User;
+import com.forexcard.repo.UserRepository;
+import com.forexcard.service.EmailService;
+import com.forexcard.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+
+@RestController
+@RequestMapping(&quot;/user&quot;)
+<span class="fc" id="L20">public class UserController {</span>
+
+	@Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private EmailService emailService;
+
+
+    @Autowired
+    private UserService userService;
+
+
+
+    // Register/Add User
+    @PostMapping(&quot;/addUser&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; addUser(@RequestBody User user) {
+<span class="nc" id="L37">        String result = userService.addUser(user);</span>
+<span class="nc" id="L38">        boolean success = &quot;Register successful&quot;.equalsIgnoreCase(result);</span>
+
+<span class="nc" id="L40">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L41">        response.put(&quot;message&quot;, result);</span>
+<span class="nc" id="L42">        response.put(&quot;success&quot;, success);</span>
+        
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        return new ResponseEntity&lt;&gt;(response, success ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST);</span>
+    }
+
+    // Get user by ID
+    @GetMapping(&quot;/{userId}&quot;)
+    public ResponseEntity&lt;UserDTO&gt; getUserById(@PathVariable(&quot;userId&quot;) Integer id) {
+        // Fetch the UserDTO from the service layer
+<span class="nc" id="L52">        UserDTO userDTO = userService.getUserDTO(id);</span>
+
+        // Return the response
+<span class="nc" id="L55">        return ResponseEntity.ok(userDTO);</span>
+    }
+    @GetMapping(&quot;/profile/{userId}&quot;)
+    public ResponseEntity&lt;PendingUserDTO&gt; getUserProfileById(@PathVariable(&quot;userId&quot;) Integer id) {
+        // Fetch the UserDTO from the service layer
+<span class="nc" id="L60">        UserDTO userDTO = userService.getUserDTO(id);</span>
+<span class="nc" id="L61">        PendingUserDTO pendingdto =userService.getUserProfileById(id);</span>
+        // Return the response
+<span class="nc" id="L63">        return ResponseEntity.ok(pendingdto);</span>
+    }
+    @GetMapping(&quot;/approved&quot;)
+    public List&lt;PendingUserDTO&gt; getApprovedUsers() {
+<span class="nc" id="L67">        return userService.getUsersByAdminAction(&quot;APPROVED&quot;);</span>
+    }
+
+    @GetMapping(&quot;/rejected&quot;)
+    public List&lt;PendingUserDTO&gt; getRejectedUsers() {
+<span class="nc" id="L72">        return userService.getUsersByAdminAction(&quot;REJECTED&quot;);</span>
+    }
+    
+    @PutMapping(&quot;/update-profiledetalis&quot;)
+    public ResponseEntity&lt;String&gt; updateProfile(@RequestBody User user)
+    {
+<span class="nc" id="L78">    	return userService.updateProfile(user);</span>
+    }
+   
+    
+    @PatchMapping(&quot;/verify-otp-and-update-email&quot;)
+    public ResponseEntity&lt;String&gt; verifyOtpAndUpdateEmail(@RequestParam(&quot;userId&quot;) Integer userId,
+                                                          @RequestParam(&quot;otp&quot;) String otp,
+                                                          @RequestParam(&quot;newEmail&quot;) String newEmail) {
+<span class="nc" id="L86">        String storedOtp = emailService.getStoredOtp(userId);</span>
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (storedOtp == null) {</span>
+<span class="nc" id="L89">            return ResponseEntity.badRequest().body(&quot;OTP has expired or not generated yet.&quot;);</span>
+        }
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (!otp.equals(storedOtp)) {</span>
+<span class="nc" id="L93">            return ResponseEntity.badRequest().body(&quot;Invalid OTP.&quot;);</span>
+        }
+
+<span class="nc" id="L96">        Optional&lt;User&gt; userOpt = userRepository.findById(userId);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (userOpt.isEmpty()) {</span>
+<span class="nc" id="L98">            return ResponseEntity.badRequest().body(&quot;User not found.&quot;);</span>
+        }
+
+<span class="nc" id="L101">        User user = userOpt.get();</span>
+<span class="nc" id="L102">        user.setEmail(newEmail);</span>
+<span class="nc" id="L103">        userRepository.save(user);</span>
+<span class="nc" id="L104">        emailService.clearOtp(userId);</span>
+
+<span class="nc" id="L106">        return ResponseEntity.ok(&quot;Email updated successfully.&quot;);</span>
+    }
+
+    @GetMapping(&quot;/all&quot;)
+    public ResponseEntity&lt;List&lt;User&gt;&gt; getAllUsers() {
+<span class="nc" id="L111">        return ResponseEntity.ok(userService.getAllUsers());</span>
+    }
+    
+
+    @GetMapping(&quot;/transactions/{userId}&quot;)
+    public ResponseEntity&lt;?&gt; getUserTransactions(@PathVariable(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L117">        Optional&lt;List&lt;Transaction&gt;&gt; transactions = userService.getUserTransactions(userId);</span>
+
+<span class="nc" id="L119">        return transactions.map(ResponseEntity::ok)</span>
+<span class="nc" id="L120">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
