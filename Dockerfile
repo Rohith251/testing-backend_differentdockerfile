@@ -10,8 +10,8 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Use container network host for Postgres
-ENV DATABASE_URL=jdbc:postgresql://postgres:80/postgres
+# Environment Variables
+ENV DATABASE_URL=jdbc:postgresql://13.208.224.83:5432/postgres
 ENV DATABASE_USER=admin
 ENV DATABASE_PASSWORD=1234
 
